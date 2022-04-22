@@ -13,6 +13,7 @@ const App = () => {
       desc: 'Learn React',
       date: '06/03/2022',
       deadline: '07/03/2022',
+      user: 'C',
       complete: false,
     },
     {
@@ -21,6 +22,7 @@ const App = () => {
       desc: 'Learn React hook',
       date: '05/03/2022',
       deadline: '10/03/2022',
+      user: 'A',
       complete: true,
     },
     {
@@ -29,6 +31,7 @@ const App = () => {
       desc: 'Learn MUI',
       date: '12/04/2022',
       deadline: '24/04/2022',
+      user: 'B',
       complete: false,
     },
   ]);
@@ -71,25 +74,30 @@ const App = () => {
     setTasks((prevState) => prevState.filter(({ id }) => id !== idToDelete));
   };
 
-  const sortByDeadline = () => {
-    // let sortedTime = tasks.sort((a, b) =>
-    //   a.deadline
-    //     .split('/')
-    //     .reverse()
-    //     .join()
-    //     .localeCompare(b.deadline.split('/').reverse().join())
-    //);
-    const sortedTime = tasks.sort((a,b) => b.joinDate > a.joinDate ? 1:-1)
-
-    console.log(sortedTime);
-    setTasks(sortedTime);
+  const sortByDeadline = (tasks) => {
+    tasks.sort((a, b) => (
+      a.deadline
+        .split('/')
+        .reverse()
+        .join()
+        .localeCompare(b.deadline.split('/').reverse().join()))
+    );
   };
+
+  function compare(a, b) {
+    if (a.user < b.user)
+      return -1;
+    if (a.user > b.user)
+      return 1;
+    return 0;
+  }
 
   const updateDeadline = (deadline, isComplete) => {
     if (deadline < Date.now() && isComplete === false) {
       return "red";
     }
   }
+
 
   return (
     <div>
@@ -106,10 +114,10 @@ const App = () => {
           </button>
         </div>
         {showTaskEdit && <TaskEdit task={{}} onSaveTask={onSaveTask} />}
-        <Button variant="text">
+        <Button variant="text" onClick={tasks.sort(compare)}>
           Sort by user
         </Button>
-        <Button variant="text" onClick={sortByDeadline}>Sort by deadline</Button>
+        <Button variant="text" onClick={() => sortByDeadline(tasks)}>Sort by deadline</Button>
         <Tasks
           tasks={tasks}
           users={users}
