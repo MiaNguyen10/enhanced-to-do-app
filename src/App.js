@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import './components/style.css';
 
 const App = () => {
+  const [render, setRender] = useState(true);
   const [tasks, setTasks] = useState([
     {
       id: 1,
@@ -92,8 +93,13 @@ const App = () => {
     return 0;
   }
 
-  const updateDeadline = (deadline, isComplete) => {
-    if (deadline < Date.now() && isComplete === false) {
+  const updateDeadline = (deadline, complete) => {
+    let currentDate = new Date();
+    let cDay = currentDate.getDate();
+    let cMonth = currentDate.getMonth() + 1;
+    let cYear = currentDate.getFullYear();
+    let date = "<b>" + cDay + "/" + cMonth + "/" + cYear + "</b>";
+    if (deadline < date && complete === false) {
       return "red";
     }
   }
@@ -114,10 +120,13 @@ const App = () => {
           </button>
         </div>
         {showTaskEdit && <TaskEdit task={{}} onSaveTask={onSaveTask} />}
-        <Button variant="text" onClick={tasks.sort(compare)}>
+        <Button variant="text" onClick={()=>{
+         let task = tasks.sort(compare);
+         setTasks([...task]);
+          }}>
           Sort by user
         </Button>
-        <Button variant="text" onClick={() => sortByDeadline(tasks)}>Sort by deadline</Button>
+        {/* <Button variant="text" onClick={() => sortByDeadline(tasks)}>Sort by deadline</Button> */}
         <Tasks
           tasks={tasks}
           users={users}

@@ -5,20 +5,22 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
-const TaskEdit = ({ onSaveTask }) => {
+const TaskEdit = ({ onSaveTask, users }) => {
   const [date, setDate] = useState(new Date('2022-04-10'));
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [deadline, setDeadline] = useState(new Date('2022-04-10'));
+  const [user, setUser] = useState('');
 
   const saveTask = (e) => {
     e.preventDefault();
-    onSaveTask({ title: title, desc: desc, date: date, deadline: deadline });
+    onSaveTask({ title: title, desc: desc, date: date, deadline: deadline, user:user });
 
     setDesc('');
     setDate('');
     setTitle('');
     setDeadline('');
+    setUser('');
   };
 
   return (
@@ -73,6 +75,13 @@ const TaskEdit = ({ onSaveTask }) => {
           </Stack>
         </LocalizationProvider>
       </div>
+
+      <select className="form-select" aria-label="Default select example" onChange={(e) => setUser(e.target.value)}>
+        <option selected>Assigned user</option>
+        {users.map(user => (
+          <option value={user.id}>{user.name}</option>
+        ))}
+      </select>
       <div className="mb-3 text-right">
         <button className="button dark" onClick={saveTask}>
           Save
