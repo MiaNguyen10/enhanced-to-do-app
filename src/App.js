@@ -28,10 +28,16 @@ const App = () => {
       title: 'Learn MUI',
       desc: 'Learn MUI',
       date: '12/04/2022',
-      deadline: '20/04/2022',
+      deadline: '24/04/2022',
       complete: false,
     },
   ]);
+
+  const users = [
+    { id: 1, name: "A" },
+    { id: 2, name: "B" },
+    { id: 3, name: "C" },
+  ];
 
   const onStatus = (task) => {
     console.log('completing task');
@@ -65,18 +71,25 @@ const App = () => {
     setTasks((prevState) => prevState.filter(({ id }) => id !== idToDelete));
   };
 
-  const sortTime = () => {
-    let sortedTime = tasks.sort((a, b) =>
-      a.date
-        .split('/')
-        .reverse()
-        .join()
-        .localeCompare(b.date.split('/').reverse().join())
-    );
+  const sortByDeadline = () => {
+    // let sortedTime = tasks.sort((a, b) =>
+    //   a.deadline
+    //     .split('/')
+    //     .reverse()
+    //     .join()
+    //     .localeCompare(b.deadline.split('/').reverse().join())
+    //);
+    const sortedTime = tasks.sort((a,b) => b.joinDate > a.joinDate ? 1:-1)
 
     console.log(sortedTime);
     setTasks(sortedTime);
   };
+
+  const updateDeadline = (deadline, isComplete) => {
+    if (deadline < Date.now() && isComplete === false) {
+      return "red";
+    }
+  }
 
   return (
     <div>
@@ -93,14 +106,16 @@ const App = () => {
           </button>
         </div>
         {showTaskEdit && <TaskEdit task={{}} onSaveTask={onSaveTask} />}
-        <Button variant="text" onClick={sortTime}>
-          Sort by datetime
+        <Button variant="text">
+          Sort by user
         </Button>
-        <Button variant="text">Sort by deadline</Button>
+        <Button variant="text" onClick={sortByDeadline}>Sort by deadline</Button>
         <Tasks
           tasks={tasks}
+          users={users}
           onStatus={onStatus}
           onDeleteTask={onDeleteTask}
+          updateDeadline={updateDeadline}
         ></Tasks>
       </div>
     </div>
