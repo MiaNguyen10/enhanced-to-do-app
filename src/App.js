@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Tasks from './components/Tasks';
 import TaskEdit from './components/TaskEdit';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Button from '@mui/material/Button';
 import './components/style.css';
+import * as moment from 'moment';
 
 const App = () => {
-  const [render, setRender] = useState(true);
+  // const [render, setRender] = useState(true);
   const [tasks, setTasks] = useState([
     {
       id: 1,
       title: 'Learn React',
       desc: 'Learn React',
       date: '06/03/2022',
-      deadline: '07/03/2022',
+      deadline: '12/03/2022',
       user: 'C',
       complete: false,
     },
@@ -31,17 +32,11 @@ const App = () => {
       title: 'Learn MUI',
       desc: 'Learn MUI',
       date: '12/04/2022',
-      deadline: '24/04/2022',
+      deadline: '25/04/2022',
       user: 'B',
       complete: false,
     },
   ]);
-
-  const users = [
-    { id: 1, name: "A" },
-    { id: 2, name: "B" },
-    { id: 3, name: "C" },
-  ];
 
   const onStatus = (task) => {
     console.log('completing task');
@@ -56,15 +51,16 @@ const App = () => {
 
   const [showTaskEdit, setShowTaskEdit] = useState(false);
 
-  const onSaveTask = ({ title, desc, date, deadline }) => {
+  const onSaveTask = ({ title, desc, date, deadline, user }) => {
     console.log('saving tasks');
     setTasks([
       {
         title: title,
         desc: desc,
-        date: date,
-        deadline: deadline,
+        date: moment(date).format('D/MM/YYYY'),
+        deadline: moment(deadline).format('D/MM/YYYY'),
         id: Date.now(),
+        user: user,
         complete: false,
       },
       ...tasks,
@@ -75,35 +71,39 @@ const App = () => {
     setTasks((prevState) => prevState.filter(({ id }) => id !== idToDelete));
   };
 
-  const sortByDeadline = (tasks) => {
-    tasks.sort((a, b) => (
-      a.deadline
-        .split('/')
-        .reverse()
-        .join()
-        .localeCompare(b.deadline.split('/').reverse().join()))
-    );
-  };
-
-  function compare(a, b) {
-    if (a.user < b.user)
-      return -1;
-    if (a.user > b.user)
-      return 1;
+  function compareDeadline(a, b) {
+    if (a.deadline < b.deadline) return -1;
+    if (a.deadline > b.deadline) return 1;
     return 0;
   }
+
+  function compare(a, b) {
+    if (a.user < b.user) return -1;
+    if (a.user > b.user) return 1;
+    return 0;
+  }
+
+  useEffect((deadline, title) => {
+    var x = new moment();
+    var y = moment([2022, 4, 24]);
+    var duration = moment(y.diff(x)).format('mm');
+    console.log(moment(x).format('dddd, MMMM Do YYYY, h:mm:ss a'));
+    console.log(duration);
+    if (moment(duration).isSameOrAfter('30', 'minute') === true) {
+      alert(title + 'need to do');
+    }
+  }, []);
 
   const updateDeadline = (deadline, complete) => {
     let currentDate = new Date();
     let cDay = currentDate.getDate();
     let cMonth = currentDate.getMonth() + 1;
     let cYear = currentDate.getFullYear();
-    let date = "<b>" + cDay + "/" + cMonth + "/" + cYear + "</b>";
-    if (deadline < date && complete === false) {
-      return "red";
+    let date = cDay + '/' + cMonth + '/' + cYear;
+    if (deadline <= date && complete === false) {
+      return 'red';
     }
-  }
-
+  };
 
   return (
     <div>
@@ -120,16 +120,26 @@ const App = () => {
           </button>
         </div>
         {showTaskEdit && <TaskEdit task={{}} onSaveTask={onSaveTask} />}
-        <Button variant="text" onClick={()=>{
-         let task = tasks.sort(compare);
-         setTasks([...task]);
-          }}>
+        <Button
+          variant="text"
+          onClick={() => {
+            let task = tasks.sort(compare);
+            setTasks([...task]);
+          }}
+        >
           Sort by user
         </Button>
-        {/* <Button variant="text" onClick={() => sortByDeadline(tasks)}>Sort by deadline</Button> */}
+        <Button
+          variant="text"
+          onClick={() => {
+            let task = tasks.sort(compareDeadline);
+            setTasks([...task]);
+          }}
+        >
+          Sort by deadline
+        </Button>
         <Tasks
           tasks={tasks}
-          users={users}
           onStatus={onStatus}
           onDeleteTask={onDeleteTask}
           updateDeadline={updateDeadline}
